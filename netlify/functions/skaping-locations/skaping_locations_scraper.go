@@ -2,7 +2,13 @@ package main
 
 import (
 	"regexp"
+	"strconv"
 )
+
+type LatLng struct {
+	Lat float64
+	Lng float64
+}
 
 type SkapingRawDataLocation = string
 
@@ -27,4 +33,16 @@ func ExractSkapingLocationUrl(rawDataLocation *SkapingRawDataLocation) string {
 	}
 
 	return matches[0][1]
+}
+
+func ExtractSkapingLocationLatLng(rawDataLocation *SkapingRawDataLocation) LatLng {
+	pattern := regexp.MustCompile(`position: new google.maps.LatLng\((.*),\s?(.*)\)`)
+	matches := pattern.FindAllStringSubmatch(*rawDataLocation, -1)
+	if len(matches) == 0 {
+		return LatLng{}
+	}
+	lat, _ := strconv.ParseFloat(matches[0][1], 64)
+	lng, _ := strconv.ParseFloat(matches[0][2], 64)
+
+	return LatLng{lat, lng}
 }

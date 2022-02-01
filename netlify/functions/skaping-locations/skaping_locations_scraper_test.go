@@ -131,3 +131,31 @@ func TestExractSkapingLocationUrl_RawDataLocationWithoutMatch_EmptyString(t *tes
 	expectedLocationUrl := "http://www.skaping.com/banffgondola"
 	assert.Empty(t, locationUrl, expectedLocationUrl)
 }
+
+func TestExractSkapingLatLng_RawDataLocationWithMatch_LatLng(t *testing.T) {
+	// GIVEN
+	rawDataLocation := `new google.maps.InfoWindow({
+		content: "<div style=\"width:650px;max-width:100%\"><div id=\"skaping\" style=\"position:relative;width:100%;padding-top:56.25%;\"><iframe src=\"//www.skaping.com/banffgondola\" allowfullscreen style=\"position:absolute;top:0;left:0;height:100%;width:100%;border:0\"></iframe></div></div><br /><a target=\"_blank\" href=\"http://www.skaping.com/banffgondola\">http://www.skaping.com/banffgondola</a>"
+	});
+	 markers[22] = new google.maps.Marker({
+		 position: new google.maps.LatLng(51.14460700, -115.57476600),
+		 animation: google.maps.Animation.DROP,
+		 map: map,
+		 title:"Banff Gondola"
+	 });`
+	rawDataLocationInvalidFloats := `new google.maps.InfoWindow({
+		content: "<div style=\"width:650px;max-width:100%\"><div id=\"skaping\" style=\"position:relative;width:100%;padding-top:56.25%;\"><iframe src=\"//www.skaping.com/banffgondola\" allowfullscreen style=\"position:absolute;top:0;left:0;height:100%;width:100%;border:0\"></iframe></div></div><br /><a target=\"_blank\" href=\"http://www.skaping.com/banffgondola\">http://www.skaping.com/banffgondola</a>"
+	});
+	 markers[22] = new google.maps.Marker({
+		 position: new google.maps.LatLng(alpha, bravo),
+		 animation: google.maps.Animation.DROP,
+		 map: map,
+		 title:"Banff Gondola"
+	 });`
+	// WHEN
+	latLng := ExtractSkapingLocationLatLng(&rawDataLocation)
+	latLngInvalidFloats := ExtractSkapingLocationLatLng(&rawDataLocationInvalidFloats)
+	// THEN
+	assert.Equal(t, latLng, LatLng{51.14460700, -115.57476600})
+	assert.Equal(t, latLngInvalidFloats, LatLng{0, 0})
+}

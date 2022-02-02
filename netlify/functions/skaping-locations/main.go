@@ -3,14 +3,15 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	log "github.com/sirupsen/logrus"
 )
 
 func handler(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	fmt.Println("Get Skaping locations.")
+	log.SetLevel(log.InfoLevel)
+	log.Info("Get Skaping locations.")
 
 	type SkapingLocationsResponse struct {
 		Locations *SkapingLocations `json:"locations"`

@@ -5,8 +5,6 @@ import (
 	"strconv"
 )
 
-type SkapingRawDataLocation = string
-
 type SkapingLocationScraper struct {
 	rawHtml string
 }

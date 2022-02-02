@@ -19,7 +19,14 @@ func NewSkapingLocation(url string, position LatLng, title string) *SkapingLocat
 	return &SkapingLocation{Url: url, Position: position, Title: title}
 }
 
-func (skapingLocation *SkapingLocation) toJson() string {
+func (skapingLocation *SkapingLocation) ToJson() string {
 	jsonData, _ := json.Marshal(skapingLocation)
+	return string(jsonData)
+}
+
+type SkapingLocations []SkapingLocation
+
+func (skapingLocations *SkapingLocations) ToJson() string {
+	jsonData, _ := json.Marshal(skapingLocations)
 	return string(jsonData)
 }

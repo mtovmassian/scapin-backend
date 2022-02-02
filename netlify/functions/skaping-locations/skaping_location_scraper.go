@@ -1,32 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"regexp"
 	"strconv"
 )
 
-type LatLng struct {
-	Lat float64 `json:"lat"`
-	Lng float64 `json:"lng"`
-}
-
 type SkapingRawDataLocation = string
-
-type SkapingLocation struct {
-	Url      string `json:"url"`
-	Position LatLng `json:"position"`
-	Title    string `json:"title"`
-}
-
-func NewSkapingLocation(url string, position LatLng, title string) *SkapingLocation {
-	return &SkapingLocation{Url: url, Position: position, Title: title}
-}
-
-func (skapingLocation *SkapingLocation) toJson() string {
-	jsonData, _ := json.Marshal(skapingLocation)
-	return string(jsonData)
-}
 
 type SkapingLocationScraper struct {
 	rawHtml string

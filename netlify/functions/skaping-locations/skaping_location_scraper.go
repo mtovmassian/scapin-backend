@@ -1,6 +1,9 @@
 package main
 
 import (
+	"io/ioutil"
+	"log"
+	"net/http"
 	"regexp"
 	"strconv"
 )
@@ -13,7 +16,23 @@ func NewSkapingLocationScraper(rawHtml string) *SkapingLocationScraper {
 	return &SkapingLocationScraper{rawHtml: rawHtml}
 }
 
-func (scraper *SkapingLocationScraper) ScrapLocations() []SkapingLocation {
+func NewSkapingLocationScraperFromUrl(url string) *SkapingLocationScraper {
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return &SkapingLocationScraper{rawHtml: string(body)}
+}
+
+func (scraper *SkapingLocationScraper) ScrapLocations() SkapingLocations {
 	skapingLocations := []SkapingLocation{}
 	for _, rawDataLocation := range scraper.ScrapRawDataLocations() {
 		skapingLocations = append(skapingLocations, scraper.FromRawToSkapingLocation(&rawDataLocation))

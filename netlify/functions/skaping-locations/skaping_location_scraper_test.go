@@ -1,10 +1,22 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestNewSkapingLocationScraperFromUrl(t *testing.T) {
+	t.Skip("Skipping integration test.")
+	// GIVEN
+	url := "https://www.skaping.com/camera/map"
+	// WHEN
+	scraper := NewSkapingLocationScraperFromUrl(url)
+	// THEN
+	fmt.Printf("%v", scraper.ScrapLocations())
+	assert.NotEmpty(t, scraper.rawHtml)
+}
 
 func TestExtractLocationUrl_NominalCase_String(t *testing.T) {
 	// GIVEN

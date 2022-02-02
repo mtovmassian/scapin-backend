@@ -18,18 +18,26 @@ type SkapingLocation struct {
 	title    string
 }
 
-func ScrapSkapingLocations(rawHtml *string) []SkapingLocation {
+type SkapingLocationScraper struct {
+	rawHtml string
+}
+
+func NewSkapingLocationScraper(rawHtml string) *SkapingLocationScraper {
+	return &SkapingLocationScraper{rawHtml: rawHtml}
+}
+
+func (scraper *SkapingLocationScraper) ScrapLocations() []SkapingLocation {
 	skapingLocations := []SkapingLocation{}
-	for _, rawDataLocation := range ScrapSkapingRawDataLocations(rawHtml) {
-		skapingLocations = append(skapingLocations, ToSkapingLocation(&rawDataLocation))
+	for _, rawDataLocation := range scraper.ScrapRawDataLocations() {
+		skapingLocations = append(skapingLocations, scraper.FromRawToSkapingLocation(&rawDataLocation))
 	}
 
 	return skapingLocations
 }
 
-func ScrapSkapingRawDataLocations(rawHtml *string) []SkapingRawDataLocation {
+func (scraper *SkapingLocationScraper) ScrapRawDataLocations() []string {
 	pattern := regexp.MustCompile(`(new google\.maps\.InfoWindow[.\s\S]*?new google\.maps\.Marker[.\s\S]*?;)`)
-	matches := pattern.FindAllStringSubmatch(*rawHtml, -1)
+	matches := pattern.FindAllStringSubmatch(scraper.rawHtml, -1)
 	rawDataLocations := []string{}
 	for _, match := range matches {
 		rawDataLocations = append(rawDataLocations, match[1])
@@ -37,15 +45,7 @@ func ScrapSkapingRawDataLocations(rawHtml *string) []SkapingRawDataLocation {
 	return rawDataLocations
 }
 
-func ToSkapingLocation(rawDataLocation *SkapingRawDataLocation) SkapingLocation {
-	return SkapingLocation{
-		url:      ExractSkapingLocationUrl(rawDataLocation),
-		position: ExtractSkapingLocationLatLng(rawDataLocation),
-		title:    ExtractSkapingLocationTitle(rawDataLocation),
-	}
-}
-
-func ExractSkapingLocationUrl(rawDataLocation *SkapingRawDataLocation) string {
+func (scraper *SkapingLocationScraper) ExractLocationUrl(rawDataLocation *string) string {
 	pattern := regexp.MustCompile(`href=\\"(.*)\\"`)
 	matches := pattern.FindAllStringSubmatch(*rawDataLocation, -1)
 	if len(matches) == 0 {
@@ -55,7 +55,7 @@ func ExractSkapingLocationUrl(rawDataLocation *SkapingRawDataLocation) string {
 	return matches[0][1]
 }
 
-func ExtractSkapingLocationLatLng(rawDataLocation *SkapingRawDataLocation) LatLng {
+func (scraper *SkapingLocationScraper) ExtractLocationLatLng(rawDataLocation *string) LatLng {
 	pattern := regexp.MustCompile(`position: new google.maps.LatLng\((.*),\s?(.*)\)`)
 	matches := pattern.FindAllStringSubmatch(*rawDataLocation, -1)
 	if len(matches) == 0 {
@@ -67,7 +67,7 @@ func ExtractSkapingLocationLatLng(rawDataLocation *SkapingRawDataLocation) LatLn
 	return LatLng{lat, lng}
 }
 
-func ExtractSkapingLocationTitle(rawDataLocation *SkapingRawDataLocation) string {
+func (scraper *SkapingLocationScraper) ExtractLocationTitle(rawDataLocation *string) string {
 	pattern := regexp.MustCompile(`title:"(.*)"`)
 	matches := pattern.FindAllStringSubmatch(*rawDataLocation, -1)
 	if len(matches) == 0 {
@@ -75,4 +75,12 @@ func ExtractSkapingLocationTitle(rawDataLocation *SkapingRawDataLocation) string
 	}
 
 	return matches[0][1]
+}
+
+func (scraper *SkapingLocationScraper) FromRawToSkapingLocation(rawDataLocation *string) SkapingLocation {
+	return SkapingLocation{
+		url:      scraper.ExractLocationUrl(rawDataLocation),
+		position: scraper.ExtractLocationLatLng(rawDataLocation),
+		title:    scraper.ExtractLocationTitle(rawDataLocation),
+	}
 }

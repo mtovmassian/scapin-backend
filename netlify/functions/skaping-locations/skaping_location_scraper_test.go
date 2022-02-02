@@ -1,12 +1,33 @@
 package main
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestExractLocationUrl_NominalCase_String(t *testing.T) {
+func TestSkapingLocationToJson_NominalCase_String(t *testing.T) {
+	// GIVEN
+	skapingLocation := NewSkapingLocation(
+		"uniform",
+		LatLng{1.1, 2.2},
+		"tango",
+	)
+	// WHEN
+	skapingLocationJson := skapingLocation.toJson()
+	expectedSkapingLocationJson := strings.Join([]string{
+		"{",
+		"\"url\":\"uniform\",",
+		"\"position\":{\"lat\":1.1,\"lng\":2.2},",
+		"\"title\":\"tango\"",
+		"}",
+	}, "")
+	// THEN
+	assert.Equal(t, expectedSkapingLocationJson, skapingLocationJson)
+}
+
+func TestExtractLocationUrl_NominalCase_String(t *testing.T) {
 	// GIVEN
 	rawDataLocation := `new google.maps.InfoWindow({
 		content: "<div style=\"width:650px;max-width:100%\"><div id=\"skaping\" style=\"position:relative;width:100%;padding-top:56.25%;\"><iframe src=\"//www.skaping.com/banffgondola\" allowfullscreen style=\"position:absolute;top:0;left:0;height:100%;width:100%;border:0\"></iframe></div></div><br /><a target=\"_blank\" href=\"http://www.skaping.com/banffgondola\">http://www.skaping.com/banffgondola</a>"
@@ -96,9 +117,9 @@ func TestFromRawToSkapingLocation_NominalCase_SkapingLocation(t *testing.T) {
 	skapingLocation := NewSkapingLocationScraper("").FromRawToSkapingLocation(&rawDataLocation)
 	// THEN
 	expectedSkapingLocation := SkapingLocation{
-		url:      "http://www.skaping.com/banffgondola",
-		position: LatLng{51.14460700, -115.57476600},
-		title:    "Banff Gondola",
+		Url:      "http://www.skaping.com/banffgondola",
+		Position: LatLng{51.14460700, -115.57476600},
+		Title:    "Banff Gondola",
 	}
 	assert.Equal(t, expectedSkapingLocation, skapingLocation)
 }
@@ -246,14 +267,14 @@ func TestScrapSkapingLocations_NominalCase_ListOfSkapingLocations(t *testing.T) 
 	skapingLocationsNoMatch := NewSkapingLocationScraper(rawHtmlNoMatch).ScrapLocations()
 	// THEN
 	expectedSkapingLocation1 := SkapingLocation{
-		url:      "http://www.skaping.com/pra-loup/molanes",
-		position: LatLng{44.36097000, 6.60417300},
-		title:    " PRA LOUP - CLOS DU SERRE (1820m)",
+		Url:      "http://www.skaping.com/pra-loup/molanes",
+		Position: LatLng{44.36097000, 6.60417300},
+		Title:    " PRA LOUP - CLOS DU SERRE (1820m)",
 	}
 	expectedSkapingLocation2 := SkapingLocation{
-		url:      "http://www.skaping.com/ski-macedonia/bistra-mavrovo",
-		position: LatLng{41.64767700, 20.73542600},
-		title:    "#skimacedonia Bistra-Mavrovo",
+		Url:      "http://www.skaping.com/ski-macedonia/bistra-mavrovo",
+		Position: LatLng{41.64767700, 20.73542600},
+		Title:    "#skimacedonia Bistra-Mavrovo",
 	}
 	expectedSkapingLocations := []SkapingLocation{
 		expectedSkapingLocation1,

@@ -2,7 +2,6 @@ package main
 
 import (
 	"io/ioutil"
-	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -16,20 +15,20 @@ func NewSkapingLocationScraper(rawHtml string) *SkapingLocationScraper {
 	return &SkapingLocationScraper{rawHtml: rawHtml}
 }
 
-func NewSkapingLocationScraperFromUrl(url string) *SkapingLocationScraper {
+func NewSkapingLocationScraperFromUrl(url string) (scraper *SkapingLocationScraper, err error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return &SkapingLocationScraper{rawHtml: string(body)}
+	return &SkapingLocationScraper{rawHtml: string(body)}, nil
 }
 
 func (scraper *SkapingLocationScraper) ScrapLocations() SkapingLocations {

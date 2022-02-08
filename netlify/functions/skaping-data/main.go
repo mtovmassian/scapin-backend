@@ -25,6 +25,11 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (*event
 	if val, ok := request.QueryStringParameters["data"]; ok && val == "locations" {
 		return GetSkapingLocations()
 	}
+	if val, ok := request.QueryStringParameters["data"]; ok && val == "picture" {
+		if locationUrl, locationUrlOk := request.QueryStringParameters["location-url"]; locationUrlOk {
+			return GetSkapingPicture(locationUrl)
+		}
+	}
 	return ReturnBadRequest()
 }
 
@@ -66,6 +71,29 @@ func GetSkapingLocations() (*events.APIGatewayProxyResponse, error) {
 	skapingLocations := scraper.ScrapLocations()
 
 	bodyResponse := &SkapingDataBodyResponse{"OK", &skapingLocations}
+
+	bodyResponseJson, _ := json.Marshal(bodyResponse)
+
+	return &events.APIGatewayProxyResponse{
+		StatusCode:      200,
+		Headers:         map[string]string{"Content-Type": "application/json"},
+		Body:            string(bodyResponseJson),
+		IsBase64Encoded: false,
+	}, nil
+}
+
+func GetSkapingPicture(skapingLocationUrl string) (*events.APIGatewayProxyResponse, error) {
+
+	log.Info("Getting Skaping picture.")
+
+	scraper, err := NewSkapingPictureScraperFromUrl(skapingLocationUrl)
+	if err != nil {
+		return ReturnInternalServerError(err)
+	}
+
+	skapingPicture := scraper.ScrapPicture()
+
+	bodyResponse := &SkapingDataBodyResponse{"OK", &skapingPicture}
 
 	bodyResponseJson, _ := json.Marshal(bodyResponse)
 

@@ -12,7 +12,7 @@ func TestNewSkapingLocationScraperFromUrl(t *testing.T) {
 	// GIVEN
 	url := "https://www.skaping.com/camera/map"
 	// WHEN
-	scraper := NewSkapingLocationScraperFromUrl(url)
+	scraper, _ := NewSkapingLocationScraperFromUrl(url)
 	// THEN
 	fmt.Printf("%v", scraper.ScrapLocations())
 	assert.NotEmpty(t, scraper.rawHtml)
@@ -267,7 +267,7 @@ func TestScrapSkapingLocations_NominalCase_ListOfSkapingLocations(t *testing.T) 
 		Position: LatLng{41.64767700, 20.73542600},
 		Title:    "#skimacedonia Bistra-Mavrovo",
 	}
-	expectedSkapingLocations := []SkapingLocation{
+	expectedSkapingLocations := SkapingLocations{
 		expectedSkapingLocation1,
 		expectedSkapingLocation2,
 	}

@@ -1,0 +1,26 @@
+name: Go
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  PROJECT_DIR: "./netlify/functions/skaping-data/"
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+      
+    - name: Run tests
+      working-directory: ${{ env.PROJECT_DIR }}
+      run: go test -v

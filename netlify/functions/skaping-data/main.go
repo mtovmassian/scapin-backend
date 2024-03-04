@@ -12,6 +12,10 @@ import (
 )
 
 var SKAPING_MAP_URL = os.Getenv("SKAPING_MAP_URL")
+var HEADERS = map[string]string{
+	"Content-Type":                "application/json",
+	"Access-Control-Allow-Origin": "*",
+}
 
 type SkapingDataBodyResponse struct {
 	Message string      `json:"message"`
@@ -39,7 +43,7 @@ func ReturnBadRequest() (*events.APIGatewayProxyResponse, error) {
 	bodyResponseJson, _ := json.Marshal(bodyResponse)
 	return &events.APIGatewayProxyResponse{
 		StatusCode:      400,
-		Headers:         map[string]string{"Access-Control-Allow-Origin": "*", "Content-Type": "application/json"},
+		Headers:         HEADERS,
 		Body:            string(bodyResponseJson),
 		IsBase64Encoded: false,
 	}, nil
@@ -53,7 +57,7 @@ func ReturnInternalServerError(err error) (*events.APIGatewayProxyResponse, erro
 	bodyResponseJson, _ := json.Marshal(bodyResponse)
 	return &events.APIGatewayProxyResponse{
 		StatusCode:      400,
-		Headers:         map[string]string{"Access-Control-Allow-Origin": "*", "Content-Type": "application/json"},
+		Headers:         HEADERS,
 		Body:            string(bodyResponseJson),
 		IsBase64Encoded: false,
 	}, nil
@@ -76,7 +80,7 @@ func GetSkapingLocations() (*events.APIGatewayProxyResponse, error) {
 
 	return &events.APIGatewayProxyResponse{
 		StatusCode:      200,
-		Headers:         map[string]string{"Access-Control-Allow-Origin": "*", "Content-Type": "application/json"},
+		Headers:         HEADERS,
 		Body:            string(bodyResponseJson),
 		IsBase64Encoded: false,
 	}, nil
@@ -99,7 +103,7 @@ func GetSkapingPicture(skapingLocationUrl string) (*events.APIGatewayProxyRespon
 
 	return &events.APIGatewayProxyResponse{
 		StatusCode:      200,
-		Headers:         map[string]string{"Access-Control-Allow-Origin": "*", "Content-Type": "application/json"},
+		Headers:         HEADERS,
 		Body:            string(bodyResponseJson),
 		IsBase64Encoded: false,
 	}, nil

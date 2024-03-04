@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"regexp"
 )
@@ -22,7 +22,7 @@ func NewSkapingPictureScraperFromUrl(url string) (scraper *SkapingPictureScraper
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
